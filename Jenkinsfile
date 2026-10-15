@@ -1,4 +1,3 @@
-
 pipeline {
     agent any
 
@@ -7,52 +6,47 @@ pipeline {
     }
 
     stages {
-
         stage('Clone Repository') {
             steps {
-                git branch: 'main'
-                    url:'https://github.com/harshithraj093/tocken.git'
+                git branch: 'main',
+                    url: 'https://github.com/akshatha1990M/docker2026.git'
             }
         }
 
         stage('Build Docker Image') {
             steps {
-                script {
-                    docker.build("${DOCKER_IMAGE}:latest")
-                }
+                bat 'docker build -t %DOCKER_IMAGE%:latest .'
             }
         }
 
         stage('Login to Docker Hub') {
             steps {
-                withCredentials([usernamePassword(
-                    credentialsId: 'dockerhub-creds',
-                    usernameVariable: 'DOCKER_USER',
-                    passwordVariable: 'DOCKER_PASS'
+                withCredentials([string(
+                    credentialsId: 'dockerhub-PAT',
+                    variable: 'DOCKER_PAT'
                 )]) {
-                    bat 'echo %DOCKER_PASS% | docker login -u %DOCKER_USER% --password-stdin'
+                    bat '''
+                    @echo off
+                    echo %DOCKER_PAT%|docker login -u akshatha29 --password-stdin
+                   if errorlevel 1 exit /b 1
+                    '''
                 }
             }
         }
 
         stage('Push Docker Image') {
             steps {
-                script {
-                    docker.withRegistry('', 'dockerhub-creds') {
-                        docker.image("${DOCKER_IMAGE}:latest").push()
-                    }
-                }
+                bat 'docker push %DOCKER_IMAGE%:latest'
             }
         }
     }
 
     post {
         success {
-            echo 'Image successfully built and pushed to Docker Hub'
+            echo 'Docker image built and pushed successfully.'
         }
-
         failure {
-            echo 'Pipeline failed'
+            echo 'Pipeline failed. Check Console Output.'
         }
     }
 }
