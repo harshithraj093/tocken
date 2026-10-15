@@ -1,4 +1,4 @@
-```groovy
+
 pipeline {
     agent any
 
@@ -10,7 +10,7 @@ pipeline {
 
         stage('Clone Repository') {
             steps {
-                git 'https://github.com/gagan1425/tokenexp.git'
+                git 'https://github.com/harshithraj093/tocken.git'
             }
         }
 
@@ -55,4 +55,3 @@ pipeline {
         }
     }
 }
-```
